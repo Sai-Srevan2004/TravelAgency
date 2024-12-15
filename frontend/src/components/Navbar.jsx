@@ -5,10 +5,11 @@ import { jwtDecode } from 'jwt-decode';
 const Navbar = () => {
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
+  const token = localStorage.getItem('token');
+
 
   // Update user state when component mounts or when the token changes
   useEffect(() => {
-    const token = localStorage.getItem('token');
     if (token) {
       try {
         const decodedUser = jwtDecode(token);
@@ -19,7 +20,7 @@ const Navbar = () => {
     } else {
       setUser(null);
     }
-  }, []); // This effect will run only once when the component mounts
+  }, [token]); // This effect will run only once when the component mounts
 
   const handleLogout = () => {
     localStorage.removeItem('token');
