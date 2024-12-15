@@ -1,5 +1,5 @@
 const express = require('express');
-const { createBooking, getBookings } = require('../controllers/bookingController');
+const { createBooking, getBookings,getBookingById } = require('../controllers/bookingController');
 const router = express.Router();
 const Booking = require('../models/Booking');
 const mongoose = require('mongoose');
@@ -41,5 +41,6 @@ router.get('/invoice/:id', async (req, res) => {
 
 router.post('/', createBooking);
 router.get('/', getBookings);
+router.get('/:id',getBookingById)
 
 module.exports = router;

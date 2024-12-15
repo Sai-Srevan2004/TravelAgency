@@ -3,6 +3,7 @@ const express = require('express');
 const connectDB = require('./config/db');
 const packageRoutes = require('./routes/packageRoutes');
 const bookingRoutes = require('./routes/bookingRoutes');
+const cors=require('cors')
 
 const app = express();
 
@@ -10,6 +11,9 @@ const app = express();
 connectDB();
 
 // Middleware
+app.use(cors({
+    origin:"*"
+}))
 app.use(express.json());
 
 // Routes

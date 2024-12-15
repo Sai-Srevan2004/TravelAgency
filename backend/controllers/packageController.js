@@ -4,9 +4,15 @@ const Package = require('../models/Package');
 const getPackages = async (req, res) => {
     try {
         const packages = await Package.find();
-        res.json(packages);
+        res.json({
+            success:true,
+            data:packages
+        });
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        res.status(500).json({ 
+            success:false,
+            message:err.message
+        });
     }
 };
 
@@ -15,21 +21,33 @@ const getPackageById = async (req, res) => {
     try {
         const pkg = await Package.findById(req.params.id);
         if (!pkg) return res.status(404).json({ error: "Package not found" });
-        res.json(pkg);
+        res.json({
+            success:true,
+            data:pkg
+        });
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        res.status(500).json({
+            success:false,
+            message:err.message
+        });
     }
 };
 
 // Add a new package
 const addPackage = async (req, res) => {
     try {
-        const pkg = new Package(req.body);
+        const pkg = new Package(req.body.packageData);
+        console.log(pkg)
+
         await pkg.save();
-        res.status(201).json(pkg);
+        res.status(201).json({
+            success:true,
+            data:pkg
+        });
     } catch (err) {
-        res.status(400).json({ error: err.message });
-        console.log(error.message)
+        res.status(400).json({ success:false,
+            message:err.message});
+        console.log(err.message)
     }
 };
 
@@ -38,9 +56,13 @@ const updatePackage = async (req, res) => {
     try {
         const updated = await Package.findByIdAndUpdate(req.params.id, req.body, { new: true });
         if (!updated) return res.status(404).json({ error: "Package not found" });
-        res.json(updated);
+        res.json({
+            success:true,
+            data:updated
+        });
     } catch (err) {
-        res.status(400).json({ error: err.message });
+        res.status(400).json({ success:false,
+            message:err.message});
     }
 };
 
@@ -49,9 +71,10 @@ const deletePackage = async (req, res) => {
     try {
         const deleted = await Package.findByIdAndDelete(req.params.id);
         if (!deleted) return res.status(404).json({ error: "Package not found" });
-        res.json({ message: "Package deleted successfully" });
+        res.json({success:true, message: "Package deleted successfully" });
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        res.status(500).json({ success:false,
+            message:err.message});
     }
 };
 
