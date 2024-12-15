@@ -1,8 +1,11 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Navbar from "./components/Navbar";
-import Home from "./pages/Home";
-import PackageDetails from "./pages/PackageDetails";
-import AdminPage from "./pages/AdminPage";
+import React from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import Home from './pages/Home';
+import Login from './pages/LoginPage';
+import Signup from './pages/SignUppage';
+import AdminDashboard from './components/AdminDashboard';
+import UserDashboard from './components/UserDashboard';
+import Navbar from './components/Navbar';
 
 function App() {
   return (
@@ -10,9 +13,10 @@ function App() {
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/package/:id" element={<PackageDetails />} />
-        <Route path="/admin" element={<AdminPage />} />  {/* Admin panel page */}
-
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Signup/>} />
+        <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/user" element={<UserDashboard />} />
       </Routes>
     </Router>
   );

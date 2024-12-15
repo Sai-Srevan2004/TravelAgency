@@ -1,86 +1,123 @@
 const Booking = require('../models/Booking');
-const Package = require('../models/Package');
-const mongoose=require('mongoose')
-
-const generateInvoiceHTML = require('../utils/invoiceGenerator');
+const User = require('../models/User'); // Assuming User model is already defined
+const mongoose = require('mongoose');
 
 const createBooking = async (req, res) => {
-    try {
-        const { packageId, customerName, email, phone, numberOfTravelers, specialRequests } = req.body.bookingData;
-       
-        console.log("....>",req.body)
-        // Fetch package details
-        const pkg = await Package.findById(packageId);
-        if (!pkg) return res.status(404).json({ error: "Package not found" });
+  console.log("--->",req.user)
+  try {
+    const { packageId, customerName, email, phone, numberOfTravelers, specialRequests, totalPrice } = req.body;
 
-        // Calculate total price
-        const totalPrice = pkg.price * numberOfTravelers;
-
-        // Save booking to the database
-        const booking = new Booking({
-            packageId,
-            customerName,
-            email,
-            phone,
-            numberOfTravelers,
-            specialRequests,
-            totalPrice,
-        });
-        await booking.save();
-
-        // Generate invoice HTML
-        const invoiceHTML = generateInvoiceHTML(booking, pkg);
-
-        res.status(201).json({
-            success:true,
-            message: "Booking successful",
-            data:booking,
-            invoice: invoiceHTML, // Include HTML content in the response
-        });
-    } catch (err) {
-        res.status(400).json({ success:false,message: err.message });
-    }
-};
-
-// View all bookings
-const getBookings = async (req, res) => {
-    try {
-        const bookings = await Booking.find().populate('packageId');
-        res.json({
-            success:true,
-            data:bookings
-        });
-    } catch (err) {
-        res.status(500).json({ success:false,error: err.message });
-    }
-};
-
-const getBookingById = async (req, res) => {
-    try {
-      const { id } = req.params;  // Extract booking ID from request parameters
-
-      console.log(id)
-  
-      // Check if the ID is a valid ObjectId (MongoDB)
-      if (!mongoose.Types.ObjectId.isValid(id)) {
-        return res.status(400).json({success:false, message: "Invalid booking ID" });
-      }
-  
-      // Find the booking by ID and populate the associated package details
-      const booking = await Booking.findById(id).populate('packageId');
-      if (!booking) {
-        return res.status(404).json({success:false, message: "Booking not found" });
-      }
-  
-      // Send the booking details in the response
-      res.json({
-        success:true,
-        data:booking
+    // Make sure all required fields are provided
+    if (!customerName || !email || !phone || !numberOfTravelers || !totalPrice || !packageId) {
+      return res.status(400).json({
+        success: false,
+        message: 'All required fields must be provided.'
       });
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({success:false, message: "Server error" });
     }
-  };
 
-module.exports = { createBooking, getBookings,getBookingById };
+    // Create a new booking document
+    const newBooking = new Booking({
+      packageId,
+      customerName,
+      email,
+      phone,
+      numberOfTravelers,
+      specialRequests,
+      totalPrice
+    });
+
+    // Save the booking to the database
+    const savedBooking = await newBooking.save();
+
+    // Optionally, update the user's bookings array (if userId is part of the request)
+    if (req.user && req.user.id) {  // Assuming user info is available in the request (via token)
+      console.log("user------>",req.user)
+      await User.findByIdAndUpdate(
+        req.user.id,
+        { $push: { bookings: savedBooking._id } },
+        { new: true }
+      );
+    }
+
+    res.status(201).json({
+      success: true,
+      message: 'Booking created successfully and added to user.',
+      data: savedBooking
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(400).json({ success: false, message: err.message });
+  }
+};
+
+// Get all bookings
+const getAllBookings = async (req, res) => {
+  try {
+    const bookings = await Booking.find().populate('packageId userId');
+
+    res.json({
+      success: true,
+      data: bookings,
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+// Get a booking by ID
+const getBookingById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ success: false, message: 'Invalid booking ID.' });
+    }
+
+    const booking = await Booking.findById(id).populate('packageId userId');
+
+    if (!booking) {
+      return res.status(404).json({ success: false, message: 'Booking not found.' });
+    }
+
+    res.json({
+      success: true,
+      data: booking,
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+// Get bookings for a specific user
+const getUserBookings = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({ success: false, message: 'Invalid user ID.' });
+    }
+
+    const user = await User.findById(userId).populate({
+      path: 'bookings',
+      populate: { path: 'packageId' }, // Populate package details for each booking
+    });
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found.' });
+    }
+
+    res.json({
+      success: true,
+      data: user.bookings,
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+module.exports = {
+  createBooking,
+  getAllBookings,
+  getBookingById,
+  getUserBookings,
+};

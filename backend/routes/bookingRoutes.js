@@ -1,46 +1,17 @@
 const express = require('express');
-const { createBooking, getBookings,getBookingById } = require('../controllers/bookingController');
 const router = express.Router();
-const Booking = require('../models/Booking');
-const mongoose = require('mongoose');
-const generateInvoiceHTML = require('../utils/invoiceGenerator');
-const pdf = require('html-pdf');
+const {authenticate, authorizeRoles}=require('../middlewares/Auth')
+const {
+  createBooking,
+  getAllBookings,
+  getBookingById,
+  getUserBookings
+} = require('../controllers/bookingController'); // Update path if needed
 
-// Generate and download invoice
-router.get('/invoice/:id', async (req, res) => {
-    try {
-        const { id } = req.params;
+router.post('/',authenticate, createBooking);
+router.get('/',authenticate, getAllBookings);
+router.get('/:id',authenticate, getBookingById);
+router.get('/users/:userId',authenticate, getUserBookings); // Get bookings for a specific user
 
-        if(!id)
-        {
-            return res.json("No id found!")
-        }
-
-        // Fetch booking and associated package
-        const booking = await Booking.findById(id).populate('packageId');
-        if (!booking) {
-            return res.status(404).json({ error: "Booking not found" });
-        }
-
-        // Generate invoice
-        const packageDetails = booking.packageId;
-        const invoiceHTML = generateInvoiceHTML(booking, packageDetails);
-
-        // Convert HTML to PDF
-        pdf.create(invoiceHTML).toStream((err, stream) => {
-            if (err) {
-                return res.status(500).json({ error: "PDF generation failed" });
-            }
-            res.setHeader('Content-Type', 'application/pdf');
-            stream.pipe(res);
-        });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-router.post('/', createBooking);
-router.get('/', getBookings);
-router.get('/:id',getBookingById)
 
 module.exports = router;
