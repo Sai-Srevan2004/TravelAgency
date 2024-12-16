@@ -33,8 +33,6 @@ const Navbar = () => {
     <nav className="bg-gray-800 text-white px-6 py-3 flex justify-between items-center">
       <Link to="/" className="text-lg font-semibold">Travel Packages</Link>
       <div>
-      <Link to='/' className="mr-4">Home</Link>
-
         {!user ? (
           <>
             <Link to="/login" className="mr-4">Login</Link>
@@ -43,6 +41,8 @@ const Navbar = () => {
           <>
             {user.role === 'admin' && <Link to="/admin" className="mr-4">Admin Dashboard</Link>}
             {user.role === 'user' && <Link to="/user" className="mr-4">My Dashboard</Link>}
+            <Link to='/' className="mr-4">Home</Link>
+
             <button onClick={handleLogout} className="bg-red-500 px-4 py-2 rounded">Logout</button>
           </>
         )}
