@@ -33,9 +33,10 @@ const Navbar = () => {
     <nav className="bg-gray-800 text-white px-6 py-3 flex justify-between items-center">
       <Link to="/" className="text-lg font-semibold">Travel Packages</Link>
       <div>
+      <Link to='/' className="mr-4">Home</Link>
+
         {!user ? (
           <>
-            <Link to='/' className="mr-4">Home</Link>
             <Link to="/login" className="mr-4">Login</Link>
           </>
         ) : (
