@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { jwtDecode } from 'jwt-decode';
+import { useNavigate } from 'react-router-dom';
+
 
 const UserDashboard = () => {
+  const navigate=useNavigate()
   const [packages, setPackages] = useState([]);
   const [userBookings, setUserBookings] = useState([]); // State to store user bookings
   const [form, setForm] = useState({
@@ -17,9 +21,12 @@ const UserDashboard = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const token = localStorage.getItem('token');
   const userId = localStorage.getItem('userId'); // Assuming userId is stored in localStorage
+   const [role,setRole]=useState('');
+    const decodedUser = jwtDecode(token);
 
   // Fetch available packages on component mount
   useEffect(() => {
+    setRole(decodedUser.role)
     const fetchPackages = async () => {
       try {
         setLoading(true);
@@ -95,6 +102,11 @@ const UserDashboard = () => {
     setSelectedPackageId(packageId);
     setForm((prevForm) => ({ ...prevForm, totalPrice: price }));
   };
+
+  if(role!=="user")
+    {
+      return navigate('/')
+    }
 
   if (loading) return <p>Loading...</p>;
 

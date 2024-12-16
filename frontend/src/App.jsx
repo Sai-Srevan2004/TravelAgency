@@ -6,6 +6,7 @@ import Signup from './pages/SignUppage';
 import AdminDashboard from './components/AdminDashboard';
 import UserDashboard from './components/UserDashboard';
 import Navbar from './components/Navbar';
+import PrivateRoute from './components/ProtectedRoutes';
 
 function App() {
   return (
@@ -14,9 +15,9 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Signup/>} />
-        <Route path="/admin" element={<AdminDashboard />} />
-        <Route path="/user" element={<UserDashboard />} />
+        <Route path="/signup" element={<Signup/>} />
+        <Route path="/admin" element={<PrivateRoute><AdminDashboard /></PrivateRoute>} />
+        <Route path="/user" element={<PrivateRoute><UserDashboard /></PrivateRoute>} />
       </Routes>
     </Router>
   );
