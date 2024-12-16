@@ -24,7 +24,7 @@ const Signup = () => {
     }
 
     try {
-      const response = await axios.post('http://localhost:2000/api/signup', formData);
+      const response = await axios.post('https://travelagency-backend.onrender.com/api/signup', formData);
       console.log("Signup Response", response);
 
       // Redirect to login page after successful signup

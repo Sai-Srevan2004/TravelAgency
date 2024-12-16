@@ -16,7 +16,7 @@ const AdminDashboard = () => {
     setRole(decodedUser.role);
     const fetchPackages = async () => {
       try {
-        const res = await axios.get('http://localhost:2000/api/packages');
+        const res = await axios.get('https://travelagency-backend.onrender.com/api/packages');
         setPackages(res.data.data);
       } catch (error) {
         console.error('Error fetching packages:', error);
@@ -33,12 +33,12 @@ const AdminDashboard = () => {
     };
 
     try {
-      await axios.post('http://localhost:2000/api/packages', formattedForm, {
+      await axios.post('https://travelagency-backend.onrender.com/api/packages', formattedForm, {
         headers: { Authorization: `Bearer ${token}` },
       });
       alert('Package added!');
       setForm({ title: '', description: '', price: '', availableDates: '', image: '' });
-      const res = await axios.get('http://localhost:2000/api/packages');
+      const res = await axios.get('https://travelagency-backend.onrender.com/api/packages');
       setPackages(res.data.data);
     } catch (error) {
       console.error('Error adding package:', error);
@@ -58,12 +58,12 @@ const AdminDashboard = () => {
     };
 
     try {
-      await axios.put(`http://localhost:2000/api/packages/${editForm._id}`, formattedEditForm, {
+      await axios.put(`https://travelagency-backend.onrender.com/api/packages/${editForm._id}`, formattedEditForm, {
         headers: { Authorization: `Bearer ${token}` },
       });
       alert('Package updated!');
       setEditForm(null);
-      const res = await axios.get('http://localhost:2000/api/packages');
+      const res = await axios.get('https://travelagency-backend.onrender.com/api/packages');
       setPackages(res.data.data);
     } catch (error) {
       console.error('Error updating package:', error);
@@ -73,11 +73,11 @@ const AdminDashboard = () => {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`http://localhost:2000/api/packages/${id}`, {
+      await axios.delete(`https://travelagency-backend.onrender.com/api/packages/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       alert('Package deleted!');
-      const res = await axios.get('http://localhost:2000/api/packages');
+      const res = await axios.get('https://travelagency-backend.onrender.com/api/packages');
       setPackages(res.data.data);
     } catch (error) {
       console.error('Error deleting package:', error);

@@ -9,7 +9,7 @@ const Home = () => {
   useEffect(() => {
     const fetchPackages = async () => {
       setLoading(true);
-      const res = await axios.get('http://localhost:2000/api/packages');
+      const res = await axios.get('https://travelagency-backend.onrender.com/api/packages');
       setPackages(res.data.data);
       setLoading(false)
     };

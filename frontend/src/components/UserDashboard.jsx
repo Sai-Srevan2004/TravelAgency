@@ -30,7 +30,7 @@ const UserDashboard = () => {
     const fetchPackages = async () => {
       try {
         setLoading(true);
-        const res = await axios.get('http://localhost:2000/api/packages');
+        const res = await axios.get('https://travelagency-backend.onrender.com/api/packages');
         setPackages(res.data.data);
         setLoading(false);
       } catch (error) {
@@ -47,7 +47,7 @@ const UserDashboard = () => {
       if (!userId) return;
 
       try {
-        const res = await axios.get(`http://localhost:2000/api/bookings/users/${userId}`, {
+        const res = await axios.get(`https://travelagency-backend.onrender.com/api/bookings/users/${userId}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -81,7 +81,7 @@ const UserDashboard = () => {
     };
 
     try {
-      await axios.post('http://localhost:2000/api/bookings', bookingData, {
+      await axios.post('https://travelagency-backend.onrender.com/api/bookings', bookingData, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
